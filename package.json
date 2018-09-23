@@ -1,0 +1,14 @@
+{
+  "name": "demographics-survey",
+  "version": "1.0.0",
+  "description": "A backend api for managing the RESTful service of a demographics app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hamilton Chevez",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
