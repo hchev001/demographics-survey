@@ -2,6 +2,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import mongoose from "mongoose";
 import config from "config";
+import SampleRoutes from "./routes/sample.routes";
 
 let app = express();
 
@@ -38,6 +39,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Decode request data
 app.use(bodyParser.json());
+
+SampleRoutes(app);
 
 app.listen(port);
 

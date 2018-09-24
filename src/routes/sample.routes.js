@@ -1,4 +1,4 @@
-import sampleController from "../controllers/sample/sample.controller";
+import sampleController from "../controllers/sample.controller";
 
 export default app => {
   app

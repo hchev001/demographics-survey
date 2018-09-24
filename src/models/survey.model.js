@@ -15,7 +15,7 @@ const surveySchema = new Schema({
   },
   authorId: {
     type: String,
-    default: ''
+    default: ""
   },
   questionCollection: {
     type: [String],
@@ -23,8 +23,8 @@ const surveySchema = new Schema({
   },
   audience: {
     type: String,
-    default: ''
+    default: ""
   }
 });
 
-export default mongoose.model({"Survey", surveySchema});
+export default mongoose.model("Survey", surveySchema);
