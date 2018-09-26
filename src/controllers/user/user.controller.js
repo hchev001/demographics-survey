@@ -1,15 +1,15 @@
-import projection from "./sample.controller.projection";
-import { Sample } from "../models/sample.model";
+import projection from "./user.controller.projection";
+import { User } from "../models/user.model";
 
 export default {
   /**
    * GET/
    */
-  list_all_samples: (req, res) => {
+  list_all_users: (req, res) => {
     // Process request //
 
     // Query database
-    Sample.find({}, projection(req.user, "GET /samples"), (err, dbData) => {
+    User.find({}, projection(req.user, "GET /users"), (err, dbData) => {
       // If error occured, return error response
       if (err) {
         res.status(502).send({});
@@ -27,13 +27,13 @@ export default {
   /**
    * GET/:id
    */
-  read_a_sample: (req, res) => {
+  read_a_user: (req, res) => {
     // Process request //
 
     // Query database
-    Sample.findById(
+    User.findById(
       req.params.id,
-      projection(req.user, "GET /samples/:id"),
+      projection(req.user, "GET /users/:id"),
       (err, dbData) => {
         // If error occured, return error response
         if (err) {
@@ -55,19 +55,18 @@ export default {
   /**
    * POST/
    */
-  create_a_sample: (req, res) => {
+  create_a_user: (req, res) => {
     // Process request //
 
-    // Cast incoming data as a Sample.
-    let sample = new Sample(req.body);
+    // Cast incoming data as a User.
+    let user = new User(req.body);
 
     // Ignore values submitted by user for system controlled fields.
-    sample.createdAt = Date.now();
-    sample.updatedAt = Date.now();
-    sample.published = true;
+    user.createdAt = Date.now();
+    user.updatedAt = Date.now();
 
     // Query database
-    sample.save((err, dbData) => {
+    user.save((err, dbData) => {
       // If error occured, return error respons
       if (err) {
         if (err.name != "ValidationError") {
@@ -89,16 +88,16 @@ export default {
   /**
    * PUT/:id
    */
-  update_a_sample: (req, res) => {
+  update_a_user: (req, res) => {
     // Process request //
 
     let documentToUpdate = undefined;
-    let systemFields = ["_id", "id", "createdAt", "updatedAt", "published"];
+    let systemFields = ["_id", "id", "createdAt", "updatedAt", "password"];
 
     // Query database
-    Sample.findById(
+    User.findById(
       req.params.id,
-      projection({ route: "PUT /samples/:id" }),
+      projection({ route: "PUT /users/:id" }),
       (err, dbData) => {
         // If error occured, return error response
         if (err) {
@@ -111,8 +110,8 @@ export default {
       }
     );
 
-    // Cast documentToUpdate as a Sample (to facilitate unit testing)
-    documentToUpdate = new Sample(documentToUpdate);
+    // Cast documentToUpdate as a User (to facilitate unit testing)
+    documentToUpdate = new User(documentToUpdate);
 
     // Update the retrieved document with the data submitted
     // to the PUT request (ignoring system controlled fields).
@@ -147,11 +146,11 @@ export default {
   /**
    * DELETE/:id
    */
-  delete_a_sample: (req, res) => {
+  delete_a_user: (req, res) => {
     // Process request //
 
     // Query database
-    Sample.remove({ _id: req.params.id }, (err, dbData) => {
+    User.remove({ _id: req.params.id }, (err, dbData) => {
       // If error occured, return error response
       if (err) {
         res.status(502).send({});

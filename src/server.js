@@ -2,7 +2,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import mongoose from "mongoose";
 import config from "config";
-// import SampleRoutes from "./routes/sample.routes";
+import SampleRoutes from "./routes/sample.routes";
 import User from "./models/user";
 
 let app = express();
@@ -41,30 +41,30 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Decode request data
 app.use(bodyParser.json());
 
-const testUser = new User({
-  username: "jmar777",
-  password: "Password123"
-});
+// const testUser = new User({
+//   username: "jmar777",
+//   password: "Password123"
+// });
 
-testUser.save(err => {
-  if (err) throw err;
+// testUser.save(err => {
+//   if (err) throw err;
 
-  User.findOne({ username: "jmar777" }, (err, user) => {
-    if (err) throw err;
+//   User.findOne({ username: "jmar777" }, (err, user) => {
+//     if (err) throw err;
 
-    // test a matching password
-    user.comparePassword("Password123", (err, isMatch) => {
-      if (err) throw err;
-      console.log("Password123:", isMatch);
-    });
+//     // test a matching password
+//     user.comparePassword("Password123", (err, isMatch) => {
+//       if (err) throw err;
+//       console.log("Password123:", isMatch);
+//     });
 
-    // test a failing password
-    user.comparePassword("123Password", (err, isMatch) => {
-      if (err) throw err;
-      console.log("123Password:", isMatch);
-    });
-  });
-});
+//     // test a failing password
+//     user.comparePassword("123Password", (err, isMatch) => {
+//       if (err) throw err;
+//       console.log("123Password:", isMatch);
+//     });
+//   });
+// });
 
 // SampleRoutes(app);
 
