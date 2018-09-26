@@ -1,5 +1,5 @@
 import projection from "./user.controller.projection";
-import { User } from "../models/user.model";
+import { User } from "../../models/user";
 
 export default {
   /**

@@ -3,6 +3,7 @@ import express from "express";
 import mongoose from "mongoose";
 import config from "config";
 import SampleRoutes from "./routes/sample.routes";
+import UserRoutes from "./routes/user.routes";
 import User from "./models/user";
 
 let app = express();
@@ -66,7 +67,8 @@ app.use(bodyParser.json());
 //   });
 // });
 
-// SampleRoutes(app);
+SampleRoutes(app);
+UserRoutes(app);
 
 app.listen(port);
 
