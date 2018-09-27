@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import config from "config";
 import SampleRoutes from "./routes/sample.routes";
 import UserRoutes from "./routes/user.routes";
+import AuthRoutes from "./routes/auth.routes";
 import User from "./models/user";
 
 let app = express();
@@ -69,6 +70,7 @@ app.use(bodyParser.json());
 
 SampleRoutes(app);
 UserRoutes(app);
+AuthRoutes(app);
 
 app.listen(port);
 
