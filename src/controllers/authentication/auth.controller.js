@@ -2,6 +2,20 @@ import projection from "./auth.controller.projection";
 import { User } from "../../models/user";
 import bcrypt from "bcrypt";
 
+/**
+ * POST /signup
+ *
+ * Register a new user.
+ *
+ * Expect req.body = {
+ *  "username" : XXXXX,
+ *  "password": yyyyyy
+ * }
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 export const sign_up = (req, res, next) => {
   const saltRounds = 14;
   // encrypt the password
@@ -21,10 +35,45 @@ export const sign_up = (req, res, next) => {
       }
     });
   });
-  // create new user model from encrypted password and username
-  // store the user in the database
-  // return 200 on success
-  // return 500 on error
 };
 
-export const log_in = (req, res, next) => {};
+/**
+ * POST /login
+ *
+ * Authenticates a User
+ *
+ * Expect req.body = {
+ *  "username" : XXXXX,
+ *  "password": yyyyyy
+ * }
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ *
+ * @returns JWT
+ */
+export const log_in = (req, res, next) => {
+  // find the user by their username
+  User.find({ username: req.body.username }, (err, dbData) => {
+    if (err) {
+      res.status(502).send({});
+    } else if (typeof dbData === "undefined" || dbData === null) {
+      res.status(404).send({});
+    } else {
+      // compare hash with provided password
+      bcrypt.compare(req.body.password, dbData[0].password, (err, match) => {
+        if (err) {
+          res.statua(500).send({}); // TODO: log to some global express log
+        }
+
+        if (match) {
+          // TODO: return a JWT instead
+          res.status(200).json({ code: 200, data: dbData, message: "" });
+        } else {
+          // invalid user data for logging in
+          res.status(403).json({});
+        }
+      });
+    }
+  });
+};
