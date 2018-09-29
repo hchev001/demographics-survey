@@ -1,6 +1,9 @@
 import projection from "./auth.controller.projection";
 import { User } from "../../models/user";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import config from "config";
+import { readFileSync } from "fs";
 
 /**
  * POST /signup
@@ -68,7 +71,37 @@ export const log_in = (req, res, next) => {
 
         if (match) {
           // TODO: return a JWT instead
-          res.status(200).json({ code: 200, data: dbData, message: "" });
+          const token = jwt.sign(
+            { id: dbData.username },
+            config.get("secret"),
+            { expiresIn: 86400 }
+          );
+
+          const privateKEY = readFileSync("../../../private.key", "utf8");
+          const publicKey = readFileSync("../../../public.key", "utf8");
+
+          const issuer = "DemographicsAPI";
+          const subject = "demo";
+          const audience = "students";
+
+          // signing options
+          const signOptions = {
+            issuer,
+            subject,
+            audience,
+            expiresIn: "12h",
+            algorithm: "RS256"
+          };
+
+          const token = jwt.sign(
+            { id: dbData.username },
+            config.get("secret"),
+            signOptions
+          );
+
+          res
+            .status(200)
+            .json({ code: 200, data: dbData, message: "", token: token });
         } else {
           // invalid user data for logging in
           res.status(403).json({});
