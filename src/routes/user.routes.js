@@ -1,9 +1,10 @@
 import UserController from "../controllers/user/user.controller";
+import isAuthenticated from "../services/middleware/auth.middleware";
 
 export default app => {
   app
     .route("/users")
-    .get(UserController.list_all_users)
+    .get(isAuthenticated(), UserController.list_all_users)
     .post(UserController.create_a_user);
 
   app

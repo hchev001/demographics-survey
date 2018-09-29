@@ -70,13 +70,6 @@ export const log_in = (req, res, next) => {
         }
 
         if (match) {
-          // TODO: return a JWT instead
-          const token = jwt.sign(
-            { id: dbData.username },
-            config.get("secret"),
-            { expiresIn: 86400 }
-          );
-
           const issuer = "DemographicsAPI";
           const subject = "demo";
           const audience = "students";
@@ -86,8 +79,7 @@ export const log_in = (req, res, next) => {
             issuer,
             subject,
             audience,
-            expiresIn: "12h",
-            algorithm: "RS256"
+            expiresIn: "12h"
           };
 
           const token = jwt.sign(
