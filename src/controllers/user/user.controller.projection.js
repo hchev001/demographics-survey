@@ -6,9 +6,7 @@ export default (user, route) => {
 
   switch (route) {
     case "GET /users":
-      projection = {
-        __v: 0
-      };
+      projection = { username: 1, _id: 1 };
       break;
     case "GET /users/:id":
       projection = {

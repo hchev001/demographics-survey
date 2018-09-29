@@ -16,7 +16,6 @@ export default {
       if (err) {
         res.status(502).send({});
       } else {
-        // Return success response
         res.status(200).json({
           code: 200,
           data: dbData,
