@@ -8,22 +8,7 @@ export default {
    * GET/
    */
   list_all_users: (req, res) => {
-    // Process request //
-    const token = req.headers["x-access-token"];
-    if (!token)
-      return res
-        .status(401)
-        .send({ auth: false, message: "No token provided." });
-
-    // verify token
-    jwt.verify(token, config.get("secret"), (err, decoded) => {
-      if (err)
-        return res
-          .status(500)
-          .send({ auth: false, message: "Failed to authenticate token." });
-
-      if (decoded) console.log(decoded);
-    });
+    // Process Request
 
     // Query database
     User.find({}, projection(req.user, "GET /users"), (err, dbData) => {

@@ -83,7 +83,7 @@ export const log_in = (req, res, next) => {
           };
 
           const token = jwt.sign(
-            { id: dbData.username },
+            { id: dbData._id, username: dbData.username },
             config.get("secret"),
             signOptions
           );

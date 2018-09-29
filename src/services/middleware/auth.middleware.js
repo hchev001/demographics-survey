@@ -7,7 +7,6 @@ import config from "config";
 export default options => {
   return (req, res, next) => {
     // implement the middleware function based on the options object
-    console.log(req);
     const token = req.headers["x-access-token"] || req.body.token;
     if (!token)
       return res
@@ -23,7 +22,6 @@ export default options => {
       }
 
       if (decoded) {
-        console.log(decoded);
         req.user = decoded;
         next();
       } else {
