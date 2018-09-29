@@ -77,9 +77,6 @@ export const log_in = (req, res, next) => {
             { expiresIn: 86400 }
           );
 
-          const privateKEY = readFileSync("../../../private.key", "utf8");
-          const publicKey = readFileSync("../../../public.key", "utf8");
-
           const issuer = "DemographicsAPI";
           const subject = "demo";
           const audience = "students";
