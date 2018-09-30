@@ -40,17 +40,17 @@ export default options => {
 export const roleValidator = desiredRole => {
   return (req, res, next) => {
     // return an error
-    if (!role)
+    if (!desiredRole)
       throw new Error("Failed to define what is the desiredRole of the route");
-
     // search through roles array of the user that is requesting permission to access this route
+    console.log(req.user.role);
     if (req.user.role.includes(desiredRole)) {
       next();
+    } else {
+      return res.status(403).send({
+        permission: false,
+        message: "User does not have permission to access route."
+      });
     }
-
-    return res.status(403).json({
-      permission: false,
-      message: "User does not have permission to access route."
-    });
   };
 };
