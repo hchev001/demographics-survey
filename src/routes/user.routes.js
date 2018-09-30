@@ -5,11 +5,11 @@ export default app => {
   app
     .route("/users")
     .get(isAuthenticated(), UserController.list_all_users)
-    .post(UserController.create_a_user);
+    .post(isAuthenticated(), UserController.create_a_user);
 
   app
     .route("/users/:id")
-    .get(UserController.read_a_user)
-    .put(UserController.update_a_user)
-    .delete(UserController.delete_a_user);
+    .get(isAuthenticated(), UserController.read_a_user)
+    .put(isAuthenticated(), UserController.update_a_user)
+    .delete(isAuthenticated(), UserController.delete_a_user);
 };

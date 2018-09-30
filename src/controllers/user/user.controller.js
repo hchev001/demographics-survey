@@ -107,41 +107,42 @@ export default {
           res.status(404).send({});
         } else {
           documentToUpdate = dbData;
+          // Cast documentToUpdate as a User (to facilitate unit testing)
+          documentToUpdate = new User(documentToUpdate);
+
+          // Update the retrieved document with the data submitted
+          // to the PUT request (ignoring system controlled fields).
+          for (let key in req.body) {
+            documentToUpdate[key] =
+              systemFields.indexOf(key) == -1
+                ? req.body[key]
+                : documentToUpdate[key];
+          }
+
+          // Update updatedAt date
+          documentToUpdate.updatedAt = Date.now();
+
+          // Query database
+          documentToUpdate.save((err, dbData) => {
+            // If error occured, return error response
+            if (err) {
+              if (err.name != "ValidationError") {
+                res.status(502).send({});
+              } else {
+                res.status(400).send({});
+              }
+            }
+
+            // Return success response
+            res.status(200).json({
+              code: 200,
+              data: dbData,
+              message: ""
+            });
+          });
         }
       }
     );
-
-    // Cast documentToUpdate as a User (to facilitate unit testing)
-    documentToUpdate = new User(documentToUpdate);
-
-    // Update the retrieved document with the data submitted
-    // to the PUT request (ignoring system controlled fields).
-    for (let key in req.body) {
-      documentToUpdate[key] =
-        systemFields.indexOf(key) == -1 ? req.body[key] : documentToUpdate[key];
-    }
-
-    // Update updatedAt date
-    documentToUpdate.updatedAt = Date.now();
-
-    // Query database
-    documentToUpdate.save((err, dbData) => {
-      // If error occured, return error response
-      if (err) {
-        if (err.name != "ValidationError") {
-          res.status(502).send({});
-        } else {
-          res.status(400).send({});
-        }
-      }
-
-      // Return success response
-      res.status(200).json({
-        code: 200,
-        data: dbData,
-        message: ""
-      });
-    });
   },
 
   /**
@@ -151,7 +152,7 @@ export default {
     // Process request //
 
     // Query database
-    User.remove({ _id: req.params.id }, (err, dbData) => {
+    User.findOneAndDelete({ _id: req.params.id }, (err, dbData) => {
       // If error occured, return error response
       if (err) {
         res.status(502).send({});
