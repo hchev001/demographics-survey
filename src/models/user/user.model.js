@@ -21,9 +21,8 @@ const UserSchema = new Schema({
   },
   role: {
     // determines what permissions a User has
-    type: String,
-    enum: ["ROLE_USER", "ROLE_SURVEYER", "ROLE_ADMIN"],
-    default: "ROLE_USER"
+    type: [String], // ["ROLE_USER", "ROLE_SURVEYER", "ROLE_ADMIN"]
+    default: ["ROLE_USER"]
   }
 });
 

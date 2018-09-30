@@ -44,8 +44,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 SampleRoutes(app);
-UserRoutes(app);
 AuthRoutes(app);
+UserRoutes(app);
 
 app.listen(port);
 

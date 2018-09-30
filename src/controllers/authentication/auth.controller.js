@@ -57,16 +57,16 @@ export const sign_up = (req, res, next) => {
  */
 export const log_in = (req, res, next) => {
   // find the user by their username
-  User.find({ username: req.body.username }, (err, dbData) => {
+  User.findOne({ username: req.body.username }, { __v: 0 }, (err, dbData) => {
     if (err) {
       res.status(502).send({});
     } else if (typeof dbData === "undefined" || dbData === null) {
       res.status(404).send({});
     } else {
       // compare hash with provided password
-      bcrypt.compare(req.body.password, dbData[0].password, (err, match) => {
+      bcrypt.compare(req.body.password, dbData.password, (err, match) => {
         if (err) {
-          res.statua(500).send({}); // TODO: log to some global express log
+          res.status(500).send({}); // TODO: log to some global express log
         }
 
         if (match) {
@@ -83,10 +83,12 @@ export const log_in = (req, res, next) => {
           };
 
           const token = jwt.sign(
-            { id: dbData._id, username: dbData.username },
+            { id: dbData._id, username: dbData.username, role: dbData.role },
             config.get("secret"),
             signOptions
           );
+
+          // remove the password field
 
           res
             .status(200)
