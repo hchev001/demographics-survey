@@ -18,6 +18,11 @@ const UserSchema = new Schema({
     type: String,
     default: null,
     required: true
+  },
+  role: {
+    // determines what permissions a User has
+    type: [String], // ["ROLE_USER", "ROLE_SURVEYER", "ROLE_ADMIN"]
+    default: ["ROLE_USER"]
   }
 });
 
