@@ -24,6 +24,11 @@ const surveySchema = new Schema({
   audience: {
     type: String,
     default: ""
+  },
+  title: {
+    type: String,
+    default: null,
+    required: true
   }
 });
 
