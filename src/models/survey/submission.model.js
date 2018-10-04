@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import AnswerModel from "./answer.model";
 
 const submissionSchema = new Schema({
   createdAt: {
@@ -11,7 +12,8 @@ const submissionSchema = new Schema({
   },
   submitterId: {
     type: String,
-    default: ""
+    default: "",
+    required: true
   },
   submitterEmail: {
     type: String,
@@ -19,11 +21,13 @@ const submissionSchema = new Schema({
   },
   surveyId: {
     type: String,
-    default: ""
+    default: "",
+    required: true
   },
   answerList: {
-    type: [String],
-    default: ""
+    // list of associated Answer model ids
+    type: [AnswerModel],
+    default: []
   }
 });
 
