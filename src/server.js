@@ -5,6 +5,7 @@ import config from "config";
 import SampleRoutes from "./routes/sample.routes";
 import UserRoutes from "./routes/user.routes";
 import AuthRoutes from "./routes/auth.routes";
+import SurveyRoutes from "./routes/survey.routes";
 import User from "./models/user";
 
 let app = express();
@@ -46,6 +47,7 @@ app.use(bodyParser.json());
 SampleRoutes(app);
 AuthRoutes(app);
 UserRoutes(app);
+SurveyRoutes(app);
 
 app.listen(port);
 
