@@ -164,7 +164,7 @@ export default {
     }
 
     // save all the answers to the database
-    answerModel.collection.insert(answers, (err, dbAnswers) => {
+    answerModel.insertMany(answers, (err, dbAnswers) => {
       if (err) {
         return res.status(500).send({
           code: 500,
@@ -179,42 +179,45 @@ export default {
 
       console.log(incoming_submission);
 
+      console.log(dbAnswers);
+
       // push to the incoming_submission answerList the refs of dbAnswers
       dbAnswers.forEach(answer => {
         incoming_submission.answerList.push(answer);
       });
-    });
+      // ignore values submitted by user for system controlled fields
+      incoming_submission.createdAt = Date.now();
+      incoming_submission.updatedAt = Date.now();
+      incoming_submission.submitterId = req.user.id;
+      incoming_submission.surveyId = req.params.id;  // might not be necessary since the body has surveyId
 
-    // ignore values submitted by user for system controlled fields
-    incoming_submission.createdAt = Date.now();
-    incoming_submission.updatedAt = Date.now();
-    incoming_submission.submitterId = req.user.id;
-    console.log(incoming_submission.surveyId);
-    console.log(req.params.id);
-    incoming_submission.surveyId = req.params.id; // might not be necessary since the body has surveyId
+      // populate answerList of ids
 
-    // populate answerList of ids
-
-    incoming_submission.save((err, dbData) => {
-      // if error occured, return error response
-      if (err) {
-        if (err.name != "ValidationError") {
-          res.status(502).send({});
-        } else {
-          res.status(400).send({
-            code: 400,
-            data: null,
-            message: "Error persisting submission"
-          });
+      incoming_submission.save((err, dbData) => {
+        // if error occured, return error response
+        if (err) {
+          if (err.name != "ValidationError") {
+            res.status(502).send({});
+          } else {
+            res.status(400).send({
+              code: 400,
+              data: null,
+              message: "Error persisting submission"
+            });
+          }
         }
-      }
 
-      // return success response
-      res.status(201).json({
-        code: 201,
-        data: dbData,
-        message: `Survey submission persisted.`
+        // return success response
+        res.status(201).json({
+          code: 201,
+          data: dbData,
+          message: `Survey submission persisted.`
+        });
       });
+
+
     });
+
+
   }
 };
