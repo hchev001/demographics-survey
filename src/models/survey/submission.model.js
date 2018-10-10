@@ -24,11 +24,7 @@ const submissionSchema = new Schema({
     default: "",
     required: true
   },
-  answerList: {
-    // list of associated Answer model ids
-    type: [AnswerModel],
-    default: []
-  }
+  answerList: [{ type: Schema.Types.ObjectId, ref: "Answer" }]
 });
 
 export default mongoose.model("Submission", submissionSchema);

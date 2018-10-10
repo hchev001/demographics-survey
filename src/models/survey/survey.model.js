@@ -17,11 +17,7 @@ const surveySchema = new Schema({
     type: String,
     default: ""
   },
-  questionCollection: {
-    // list of question model id assocaited to this survey
-    type: [String],
-    default: []
-  },
+  questionCollection: [{ type: Schema.Types.ObjectId, ref: "Question" }],
   audience: {
     type: String,
     default: ""
