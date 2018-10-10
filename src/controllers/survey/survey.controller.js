@@ -106,7 +106,7 @@ export default {
         // to the PUT request (ignoring system controlled fields).
         for (let key in req.body) {
           documentToUpdate[key] =
-            systemFields.indexOf[key] == -1
+            systemFields.indexOf(key) == -1
               ? req.body[key]
               : documentToUpdate[key];
         }
