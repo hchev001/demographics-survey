@@ -17,13 +17,15 @@ const surveySchema = new Schema({
     type: String,
     default: ""
   },
-  questionCollection: {
-    type: [String],
-    default: []
-  },
+  questionCollection: [{ type: Schema.Types.ObjectId, ref: "Question" }],
   audience: {
     type: String,
     default: ""
+  },
+  title: {
+    type: String,
+    default: null,
+    required: true
   }
 });
 

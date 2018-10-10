@@ -31,25 +31,21 @@ export default {
     // Process request //
 
     // Query database
-    Sample.findById(
-      req.params.id,
-      projection(req.user, "GET /samples/:id"),
-      (err, dbData) => {
-        // If error occured, return error response
-        if (err) {
-          res.status(502).send({});
-        } else if (dbData == null) {
-          res.status(404).send({});
-        } else {
-          // Return success response
-          res.status(200).json({
-            code: 200,
-            data: dbData,
-            message: ""
-          });
-        }
+    Sample.findById(req.params.id, projection(req.user, "GET /samples/:id"), (err, dbData) => {
+      // If error occured, return error response
+      if (err) {
+        res.status(502).send({});
+      } else if (dbData == null) {
+        res.status(404).send({});
+      } else {
+        // Return success response
+        res.status(200).json({
+          code: 200,
+          data: dbData,
+          message: ""
+        });
       }
-    );
+    });
   },
 
   /**
@@ -96,20 +92,16 @@ export default {
     let systemFields = ["_id", "id", "createdAt", "updatedAt", "published"];
 
     // Query database
-    Sample.findById(
-      req.params.id,
-      projection({ route: "PUT /samples/:id" }),
-      (err, dbData) => {
-        // If error occured, return error response
-        if (err) {
-          res.status(502).send({});
-        } else if (dbData == null) {
-          res.status(404).send({});
-        } else {
-          documentToUpdate = dbData;
-        }
+    Sample.findById(req.params.id, projection({ route: "PUT /samples/:id" }), (err, dbData) => {
+      // If error occured, return error response
+      if (err) {
+        res.status(502).send({});
+      } else if (dbData == null) {
+        res.status(404).send({});
+      } else {
+        documentToUpdate = dbData;
       }
-    );
+    });
 
     // Cast documentToUpdate as a Sample (to facilitate unit testing)
     documentToUpdate = new Sample(documentToUpdate);
@@ -117,8 +109,7 @@ export default {
     // Update the retrieved document with the data submitted
     // to the PUT request (ignoring system controlled fields).
     for (let key in req.body) {
-      documentToUpdate[key] =
-        systemFields.indexOf(key) == -1 ? req.body[key] : documentToUpdate[key];
+      documentToUpdate[key] = systemFields.indexOf(key) == -1 ? req.body[key] : documentToUpdate[key];
     }
 
     // Update updatedAt date

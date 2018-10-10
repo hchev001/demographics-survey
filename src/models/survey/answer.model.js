@@ -10,8 +10,7 @@ const answerSchema = new Schema({
     default: Date.now
   },
   questionId: {
-    type: String,
-    default: ""
+    type: Schema.Types.ObjectId, ref: "Question"
   },
   content: {
     type: String,

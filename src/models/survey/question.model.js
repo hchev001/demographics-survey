@@ -19,7 +19,7 @@ const questionSchema = new Schema({
   },
   answerBank: {
     type: [String],
-    default: ""
+    default: []
   },
   type: {
     type: String,
