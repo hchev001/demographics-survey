@@ -84,13 +84,7 @@ export default {
    */
   update_a_survey: (req, res, next) => {
     let documentToUpdate = undefined;
-    let systemFields = [
-      "__id",
-      "createdAt",
-      "updatedAt",
-      "authorId",
-      "questionCollection"
-    ];
+    let systemFields = ["__id", "createdAt", "updatedAt", "authorId", "questionCollection"];
 
     // Query database
     Survey.findById(req.params.id, "", (err, dbdata) => {
@@ -105,10 +99,7 @@ export default {
         // Update the retrieved document with the data submitted
         // to the PUT request (ignoring system controlled fields).
         for (let key in req.body) {
-          documentToUpdate[key] =
-            systemFields.indexOf(key) == -1
-              ? req.body[key]
-              : documentToUpdate[key];
+          documentToUpdate[key] = systemFields.indexOf(key) == -1 ? req.body[key] : documentToUpdate[key];
         }
 
         // update updateAt date
