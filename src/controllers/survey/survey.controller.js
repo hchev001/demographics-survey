@@ -131,7 +131,7 @@ export default {
    * DELETE /survey/:id
    */
   delete_a_survey: (req, res, next) => {
-    Survey.fineOneAndDelete({ _id: req.params.id }, (err, dbData) => {
+    Survey.findOneAndDelete({ _id: req.params.id }, (err, dbData) => {
       // if error occured, return error response
       if (err) {
         res.status(502).send({});
@@ -153,7 +153,13 @@ export default {
 
     if (req.body.answerList.length > 0) {
       req.body.answerList.forEach(answer => {
-        answers.push(new answerModel(answer));
+        const incomingAnswer = new answerModel(answer);
+
+        // update system controlled fields
+        incomingAnswer.createdAt = Date.now();
+        incomingAnswer.updatedAt = Date.now();
+
+        answers.push(incomingAnswer);
       });
     }
 
@@ -183,7 +189,9 @@ export default {
     incoming_submission.createdAt = Date.now();
     incoming_submission.updatedAt = Date.now();
     incoming_submission.submitterId = req.user.id;
-    incoming_submission.surveyId = req.params.id;
+    console.log(incoming_submission.surveyId);
+    console.log(req.params.id);
+    incoming_submission.surveyId = req.params.id; // might not be necessary since the body has surveyId
 
     // populate answerList of ids
 
