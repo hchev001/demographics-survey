@@ -1,5 +1,6 @@
 import { Survey, Submission } from "../../models/survey";
 import answerModel from "../../models/survey/answer.model";
+import questionModel from "../../models/survey/question.model";
 
 /**
  * GET /survey
@@ -50,32 +51,71 @@ export default {
    * POST /survey
    */
   create_a_survey: (req, res, next) => {
-    // cast incoming data as a Survey
-    let incoming_survey = new Survey(req.body);
+    // create the questions
+    const questions = [];
 
-    // ignore values submitted by user for system controlled fiels
-    incoming_survey.createdAt = Date.now();
-    incoming_survey.updatedAt = Date.now();
-    incoming_survey.authorId = req.user.id;
+    if (req.body.questionCollection.length > 0) {
+      req.body.questionCollection.forEach(q_data => {
+        const incoming_question = new questionModel(q_data);
 
-    // Persist to Database
-    incoming_survey.save((err, dbData) => {
-      // if error occured, return error response
-      if (err) {
-        if (err.name != "ValidationError") {
-          res.status(502).send({});
-        } else {
-          res.status(400).send({});
-        }
-      }
+        // ignore values submitted by user for system controlled fields
 
-      // return success response
-      res.status(201).json({
-        code: 201,
-        data: dbData,
-        message: `${dbData.title} survey has been created`
+        incoming_question.createdAt = Date.now();
+        incoming_question.updatedAt = Date.now();
+        incoming_question.authorId = req.user.id;
+
+        questions.push(incoming_question);
       });
-    });
+
+      // get rid of the questionCollection since its no longer needed.
+      delete req.body.questionCollection;
+    }
+
+    questionModel.insertMany(questions, (err, dbQuestions) => {
+      if (err) {
+        return res.status(500).send({
+          code: 500,
+          data: err,
+          message: "Something went wrong persisiting the questions to the database."
+        })
+      }
+      // cast incoming data as a Survey
+      let incoming_survey = new Survey(req.body);
+
+      // ignore values submitted by user for system controlled fiels
+      incoming_survey.createdAt = Date.now();
+      incoming_survey.updatedAt = Date.now();
+      incoming_survey.authorId = req.user.id;
+
+      // update the survey's reference of its question
+      dbQuestions.forEach(dbQ => {
+        incoming_survey.questionCollection.push(dbQ);
+      });
+
+      // Persist to Database
+      incoming_survey.save((err, dbData) => {
+        // if error occured, return error response
+        if (err) {
+          if (err.name != "ValidationError") {
+            res.status(502).send({});
+          } else {
+            res.status(400).send({
+              code: 400,
+              data: err,
+              message: "Error persisting survey."
+            });
+          }
+        }
+
+        // return success response
+        res.status(201).json({
+          code: 201,
+          data: dbData,
+          message: `${dbData.title} survey has been created`
+        });
+      });
+    })
+
   },
 
   /**
