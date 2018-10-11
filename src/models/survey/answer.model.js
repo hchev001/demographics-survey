@@ -15,6 +15,10 @@ const answerSchema = new Schema({
   content: {
     type: String,
     default: ""
+  },
+  value: {
+    type: Number,
+    default: -1
   }
 });
 
