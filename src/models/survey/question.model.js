@@ -10,12 +10,12 @@ const questionSchema = new Schema({
     default: Date.now
   },
   surveyId: {
-    type: String,
-    default: ""
+    type: Schema.Types.ObjectId,
+    ref: "Survey"
   },
-  authordId: {
+  authorId: {
     type: String,
-    default: ""
+    default: null
   },
   answerBank: {
     type: [String],

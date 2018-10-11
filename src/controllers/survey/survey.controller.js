@@ -51,6 +51,7 @@ export default {
    * POST /survey
    */
   create_a_survey: (req, res, next) => {
+
     // create the questions
     const questions = [];
 
@@ -58,19 +59,31 @@ export default {
       req.body.questionCollection.forEach(q_data => {
         const incoming_question = new questionModel(q_data);
 
-        // ignore values submitted by user for system controlled fields
 
+        // ignore values submitted by user for system controlled fields
         incoming_question.createdAt = Date.now();
         incoming_question.updatedAt = Date.now();
         incoming_question.authorId = req.user.id;
 
         questions.push(incoming_question);
       });
-
       // get rid of the questionCollection since its no longer needed.
       delete req.body.questionCollection;
+    } else {
+      // TODO: Throw some error because the survey should have at least one question.
     }
+    // cast incoming data as a Survey
+    let incoming_survey = new Survey(req.body);
 
+    // ignore values submitted by user for system controlled fiels
+    incoming_survey.createdAt = Date.now();
+    incoming_survey.updatedAt = Date.now();
+    incoming_survey.authorId = req.user.id;
+
+    // update each qestion's survey id
+    questions.forEach(q => q.surveyId = incoming_survey._id);
+
+    // persist to the database all the incoming_questions
     questionModel.insertMany(questions, (err, dbQuestions) => {
       if (err) {
         return res.status(500).send({
@@ -79,13 +92,7 @@ export default {
           message: "Something went wrong persisiting the questions to the database."
         })
       }
-      // cast incoming data as a Survey
-      let incoming_survey = new Survey(req.body);
 
-      // ignore values submitted by user for system controlled fiels
-      incoming_survey.createdAt = Date.now();
-      incoming_survey.updatedAt = Date.now();
-      incoming_survey.authorId = req.user.id;
 
       // update the survey's reference of its question
       dbQuestions.forEach(dbQ => {
@@ -106,6 +113,7 @@ export default {
             });
           }
         }
+
 
         // return success response
         res.status(201).json({
@@ -216,10 +224,6 @@ export default {
       // create the submission
       delete req.body.answerList;
       let incoming_submission = new Submission(req.body);
-
-      console.log(incoming_submission);
-
-      console.log(dbAnswers);
 
       // push to the incoming_submission answerList the refs of dbAnswers
       dbAnswers.forEach(answer => {
