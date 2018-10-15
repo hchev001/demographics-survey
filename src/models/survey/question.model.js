@@ -17,8 +17,10 @@ const questionSchema = new Schema({
     type: String,
     default: null
   },
-  answerBank: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
-  type: {
+  answerBank: [
+    { type: Schema.Types.ObjectId, ref: "Answer" }
+  ],
+  questionType: {
     type: String,
     default: ""
   },

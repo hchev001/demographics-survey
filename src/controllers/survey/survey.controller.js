@@ -1,6 +1,4 @@
-import { Survey, Submission } from "../../models/survey";
-import answerModel from "../../models/survey/answer.model";
-import questionModel from "../../models/survey/question.model";
+import { Survey, Submission, Answer, Question } from "../../models/survey";
 
 /**
  * GET /survey
@@ -52,18 +50,34 @@ export default {
    */
   create_a_survey: (req, res, next) => {
 
+    // answers belonging to questions
+    const answers = [];
+
     // create the questions
     const questions = [];
 
+
+    // if the survey has questions
     if (req.body.questionCollection.length > 0) {
       req.body.questionCollection.forEach(q_data => {
-        const incoming_question = new questionModel(q_data);
+        const incoming_question = new Question(q_data);
 
+        if (q_data.answerBank.length <= 0) {
+          // TODO: return a bad response for questions without answers
+        }
+
+        q_data.answerBank.forEach(ans => {
+
+          const ans_instance = new Answer(ans);
+          ans_instance.questionId = incoming_question._id // update its question ref
+          answers.push(ans_instance); // for inserting all answer models into the databse
+        })
 
         // ignore values submitted by user for system controlled fields
         incoming_question.createdAt = Date.now();
         incoming_question.updatedAt = Date.now();
         incoming_question.authorId = req.user.id;
+
 
         questions.push(incoming_question);
       });
@@ -72,57 +86,81 @@ export default {
     } else {
       // TODO: Throw some error because the survey should have at least one question.
     }
+
+
     // cast incoming data as a Survey
     let incoming_survey = new Survey(req.body);
-
     // ignore values submitted by user for system controlled fiels
     incoming_survey.createdAt = Date.now();
     incoming_survey.updatedAt = Date.now();
     incoming_survey.authorId = req.user.id;
 
     // update each qestion's survey id
-    questions.forEach(q => q.surveyId = incoming_survey._id);
-
-    // persist to the database all the incoming_questions
-    questionModel.insertMany(questions, (err, dbQuestions) => {
+    questions.forEach(q => {
+      q.surveyId = incoming_survey._id;
+    });
+    // questions.forEach(q => {
+    //   console.log(q);
+    //   console.log('new line');
+    // })
+    // console.log(answers);
+    Answer.insertMany(answers, (err, dbAnswers) => {
       if (err) {
         return res.status(500).send({
           code: 500,
           data: err,
-          message: "Something went wrong persisiting the questions to the database."
+          message: "Something went wrong persisting the answers to the databse."
         })
       }
-
-
-      // update the survey's reference of its question
-      dbQuestions.forEach(dbQ => {
-        incoming_survey.questionCollection.push(dbQ);
+      questions.forEach(q => {
+        dbAnswers.forEach(a => {
+          if (a.questionId === q._id)
+            q.answerBank.push(a._id);
+        });
       });
-
-      // Persist to Database
-      incoming_survey.save((err, dbData) => {
-        // if error occured, return error response
+      // persist to the database all the incoming_questions
+      Question.insertMany(questions, (err, dbQuestions) => {
         if (err) {
-          if (err.name != "ValidationError") {
-            res.status(502).send({});
-          } else {
-            res.status(400).send({
-              code: 400,
-              data: err,
-              message: "Error persisting survey."
-            });
-          }
+          return res.status(500).send({
+            code: 500,
+            data: err,
+            message: "Something went wrong persisting the questions to the database."
+          })
         }
 
 
-        // return success response
-        res.status(201).json({
-          code: 201,
-          data: dbData,
-          message: `${dbData.title} survey has been created`
+        // update the survey's reference of its question
+        dbQuestions.forEach(dbQ => {
+          incoming_survey.questionCollection.push(dbQ);
         });
-      });
-    })
+        // Persist to Database the answers
+        // Persist to Database
+        incoming_survey.save((err, dbData) => {
+          // if error occured, return error response
+          if (err) {
+            if (err.name != "ValidationError") {
+              res.status(502).send({});
+            } else {
+              res.status(400).send({
+                code: 400,
+                data: err,
+                message: "Error persisting survey."
+              });
+            }
+          }
+
+          // return success response
+          res.status(201).json({
+            code: 201,
+            data: dbData,
+            message: `${dbData.title} survey has been created`
+          });
+
+        })
+      })
+
+    });
+
 
   },
 
@@ -201,7 +239,7 @@ export default {
 
     if (req.body.answerList.length > 0) {
       req.body.answerList.forEach(answer => {
-        const incomingAnswer = new answerModel(answer);
+        const incomingAnswer = new Answer(answer);
 
         // update system controlled fields
         incomingAnswer.createdAt = Date.now();
@@ -212,7 +250,7 @@ export default {
     }
 
     // save all the answers to the database
-    answerModel.insertMany(answers, (err, dbAnswers) => {
+    Answer.insertMany(answers, (err, dbAnswers) => {
       if (err) {
         return res.status(500).send({
           code: 500,
