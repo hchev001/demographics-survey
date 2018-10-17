@@ -1,25 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 
 const answerSchema = new Schema({
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  },
-  questionId: {
+  parent_question_id: {
     type: Schema.Types.ObjectId, ref: "Question"
   },
   content: {
     type: String,
     default: ""
   },
-  value: {
+  answer_value: {
     type: Number,
     default: -1
   }
-});
+}, { timestamps: true });
 
 export default mongoose.model("Answer", answerSchema);

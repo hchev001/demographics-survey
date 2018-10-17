@@ -1,14 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
 const surveySchema = new Schema({
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  },
   published: {
     type: Boolean,
     default: true
@@ -17,7 +9,7 @@ const surveySchema = new Schema({
     type: String,
     default: ""
   },
-  questionCollection: [{ type: Schema.Types.ObjectId, ref: "Question" }],
+  question_ids: [{ type: Schema.Types.ObjectId, ref: "Question" }],
   audience: {
     type: String,
     default: ""
@@ -27,6 +19,8 @@ const surveySchema = new Schema({
     default: null,
     required: true
   }
-});
+}, {
+    timestamps: true
+  });
 
 export default mongoose.model("Survey", surveySchema);
