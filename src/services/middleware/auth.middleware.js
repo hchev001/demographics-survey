@@ -43,7 +43,6 @@ export const roleValidator = desiredRole => {
     if (!desiredRole)
       throw new Error("Failed to define what is the desiredRole of the route");
     // search through roles array of the user that is requesting permission to access this route
-    console.log(req.user.role);
     if (req.user.role.includes(desiredRole)) {
       next();
     } else {

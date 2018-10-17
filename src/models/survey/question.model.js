@@ -1,27 +1,20 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
+
+const Schema = mongoose.Schema;
 
 const questionSchema = new Schema({
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  },
   surveyId: {
+    type: Schema.Types.ObjectId,
+    ref: "Survey"
+  },
+  authorId: {
     type: String,
-    default: ""
+    default: null
   },
-  authordId: {
-    type: String,
-    default: ""
-  },
-  answerBank: {
-    type: [String],
-    default: []
-  },
-  type: {
+  answer_ids_list: [
+    { type: Schema.Types.ObjectId, ref: "Answer" }
+  ],
+  questionType: {
     type: String,
     default: ""
   },
@@ -33,6 +26,6 @@ const questionSchema = new Schema({
     type: String,
     default: ""
   }
-});
+}, { timestamps: true });
 
 export default mongoose.model("Question", questionSchema);
