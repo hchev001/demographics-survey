@@ -2,6 +2,7 @@ import { Survey, Submission, Answer, Question } from "../../models/survey";
 
 /**
  * GET /survey
+ * Returns all survey documents with its question and answer subdocuments.
  */
 export default {
   list_all_surveys: (req, res, next) => {
@@ -26,7 +27,8 @@ export default {
   },
 
   /**
-   *
+   *  GET /survey/:id
+   *  Used for retrieving a single survey along with its questions and answers.
    */
   read_a_survey: (req, res, next) => {
     Survey.
@@ -59,6 +61,25 @@ export default {
 
   /**
    * POST /survey
+   * 
+   * Used for creating a new survey or publishing a draft of a survey.
+   * Expects an object as follows
+   * {
+   *  "title": "soomething...",
+   *  "questionCollection": [
+   *    {"answers": [{
+   *      "content": "something...",
+   *      "answer_value": 2 (or some number)
+   *    }],
+   *    "questionType": "something...",
+   *    "topic": "another string",
+   *    "description": "another string..."}
+   *  }
+   * ]
+   *  
+   * }
+   * 
+   * 
    */
   create_a_survey: (req, res, next) => {
 
