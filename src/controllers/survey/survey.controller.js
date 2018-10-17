@@ -7,7 +7,10 @@ export default {
   list_all_surveys: (req, res, next) => {
     Survey.
       find({}).
-      populate("question_ids").
+      populate({
+        path: "question_ids",
+        populate: { path: "answer_ids_list" }
+      }).
       exec((err, dbdata) => {
         // if error occured, return error response
         if (err) {
@@ -26,26 +29,32 @@ export default {
    *
    */
   read_a_survey: (req, res, next) => {
-    // Query daabase
-    Survey.findById(req.params.id, "", (err, dbdata) => {
-      // if error occured, return error response
-      if (err) {
-        res.status(502).send({});
-      } else if (dbdata == null) {
-        res.status(404).send({
-          code: 404,
-          data: null,
-          message: `Survey ${req.params.id} not found.`
-        });
-      } else {
-        // return success response
-        res.status(200).json({
-          code: 200,
-          data: dbdata,
-          message: `${req.params.id} Survey resource found.`
-        });
-      }
-    });
+    Survey.
+      findById(req.params.id, "").
+      populate({
+        path: "question_ids",
+        populate: { path: "answer_ids_list" }
+      }).
+      exec((err, dbdata) => {
+        // if error occured, return error response
+        if (err) {
+          res.status(502).send({});
+        } else if (dbdata == null) {
+          res.status(404).send({
+            code: 404,
+            data: null,
+            message: `Survey ${req.params.id} not found.`
+          });
+        } else {
+          // return success response
+          res.status(200).json({
+            code: 200,
+            data: dbdata,
+            message: `${req.params.id} Survey resource found.`
+          });
+        }
+      });
+
   },
 
   /**
