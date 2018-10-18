@@ -55,6 +55,8 @@ export default {
   },
   create_a_question: (req, res) => {
     const incoming_question = new Question(req.body);
+    incoming_question.authorId = req.user.id;
+
     const answers = [];
 
     req.body.answers.forEach(answer => {
