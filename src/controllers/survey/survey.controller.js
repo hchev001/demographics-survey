@@ -126,10 +126,6 @@ export default {
       q.surveyId = incoming_survey._id;
       incoming_survey.question_ids.push(q._id);
     });
-    console.log("questions");
-    console.log(questions);
-    console.log("answers");
-    console.log(answers);
 
     Answer.insertMany(answers)
       .then(db_answers => {
@@ -143,24 +139,29 @@ export default {
                   message: "We made it to the end."
                 })
               })
+              .catch(err => {
+                res.status(500).send({
+                  code: 500,
+                  data: err,
+                  message: "Something went wrong persisting the survey."
+                })
+              })
+          })
+          .catch(err => {
+            res.status(500).send({
+              code: 500,
+              data: err,
+              message: "Something went wrong persisting the survey questions."
+            })
           })
       })
       .catch(err => {
         res.status(500).json({
           code: 500,
           data: err,
-          message: "Something went wrong creating the survey"
+          message: "Something went wrong creating the survey answers."
         })
       });
-    // return success response
-    // res.status(201).json({
-    //   code: 201,
-    //   data: incoming_survey,
-    //   message: 'we made it to the end'
-    // });
-
-
-
 
   },
 
@@ -170,7 +171,7 @@ export default {
    */
   update_a_survey: (req, res, next) => {
     let documentToUpdate = undefined;
-    let systemFields = ["__id", "createdAt", "updatedAt", "authorId", "questionCollection"];
+    let systemFields = ["_id", "createdAt", "updatedAt", "authorId", "questionCollection"];
 
     // Query database
     Survey.findById(req.params.id, "", (err, dbdata) => {
