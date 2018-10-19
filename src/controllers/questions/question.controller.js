@@ -140,9 +140,9 @@ export default {
     Question.findOneAndDelete({ _id: req.params.id }, (err, dbData) => {
       // if error occured, return erro response
       if (err) {
-        res.status(502).send({});
+        return res.status(502).send({});
       } else if (dbData == null) {
-        res.status(404).send({
+        return res.status(404).send({
           code: 404,
           data: null,
           message: "Question resource not found"

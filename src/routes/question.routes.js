@@ -9,7 +9,7 @@ export default app => {
     )
     .post(
       isAuthenticated(),
-      roleValidator("ROLE_SURVEYOR"),
+      roleValidator("ROLE_SURVEYER"),
       QuestionController.create_a_question
     );
 
@@ -17,17 +17,17 @@ export default app => {
     .route("/questions/:id")
     .get(
       isAuthenticated(),
-      roleValidator("ROLE_SURVEYOR"),
+      roleValidator("ROLE_SURVEYER"),
       QuestionController.read_a_question
     )
     .post(
       isAuthenticated(),
-      roleValidator("ROLE_SURVEYOR"),
+      roleValidator("ROLE_SURVEYER"),
       QuestionController.create_a_question
     )
     .put(
       isAuthenticated(),
-      roleValidator("ROLE_SURVEYOR"),
+      roleValidator("ROLE_SURVEYER"),
       QuestionController.update_a_question
     )
     .delete(
