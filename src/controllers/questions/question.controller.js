@@ -100,7 +100,7 @@ export default {
     // set up the query object
     let query = null;
     if (req.params.id) {
-      query = { _id: req.params.id }
+      query = { _id: req.params.id + "" }
     } else {
       return res.status(400).send({
         code: 400,
@@ -108,31 +108,45 @@ export default {
         message: "Update request missing id."
       });
     }
-
+    console.log
     // set up the update
     let update = req.body.update;
     let systemFields = ["_id", "createdAt", "updatedAt", "authorId"];
-    for (let key in update) {
-      if (update.hasOwnProperty(key)) {
-        if (update[key] === systemFields[key])
-          delete update[key];
-      }
-    }
 
-    Question.findOneAndUpdate(query, update, (err, db_update) => {
-      if (err) {
-        res.status(500).send({})
-      } else if (err == null) {
-        res.status(404).send({})
-      } else {
-        res.status(200).json({
-          code: 200,
-          data: db_update,
-          message: 'Document has been updated.'
+    Question
+      .findById(query)
+      .then(db_question => {
+        const documentToUpdate = new Question(db_question);
+
+        for (let key in update) {
+          documentToUpdate[key] = systemFields.indexOf(key) == -1 ? update[key] : documentToUpdate[key];
+        };
+
+        documentToUpdate.save((err, db_update) => {
+          // if error occured, return error response
+          if (err) {
+            if (err.name != "ValidationError") {
+              return res.status(502).send({});
+            } else {
+              return res.status(400).send({});
+            }
+          }
+
+          // return success response
+          res.status(200).json({
+            code: 200,
+            data: db_update,
+            message: "Resource has been updated"
+          });
         })
-      }
-    });
-
+      })
+      .catch(err => {
+        res.status(500).send({
+          code: 500,
+          data: err,
+          message: "Something went wrong while searching for your question."
+        })
+      });
 
 
   },
