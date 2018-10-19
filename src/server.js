@@ -6,23 +6,10 @@ import SampleRoutes from "./routes/sample.routes";
 import UserRoutes from "./routes/user.routes";
 import AuthRoutes from "./routes/auth.routes";
 import SurveyRoutes from "./routes/survey.routes";
-import User from "./models/user";
+import QuestionRoutes from "./routes/question.routes";
 
 let app = express();
 
-// mongoose.Promise = global.Promise;
-// mongoose
-//   .connect(
-//     config.DBHost,
-//     {
-//       connectTimeoutMS: 30000,
-//       keepAlive: 1,
-//       useNewUrlParser: true
-//     }
-//   )
-//   .catch(() => {
-//     console.log("Failed to connect to mongodb server");
-//   });
 let port = config.PORT;
 mongoose.Promise = global.Promise;
 mongoose
@@ -48,6 +35,7 @@ SampleRoutes(app);
 AuthRoutes(app);
 UserRoutes(app);
 SurveyRoutes(app);
+QuestionRoutes(app);
 
 app.listen(port);
 
