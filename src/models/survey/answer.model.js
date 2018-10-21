@@ -11,6 +11,10 @@ const answerSchema = new Schema({
   answer_value: {
     type: Number,
     default: -1
+  },
+  position: {
+    type: Number,
+    default: -1
   }
 }, { timestamps: true });
 
