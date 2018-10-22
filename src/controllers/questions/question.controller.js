@@ -132,13 +132,42 @@ export default {
 
           const update_question_roster = [];
           // Update the answers and respective fields
-          update.answers.forEach(answer_data => {
+          update.answers.forEach(answer_update => {
 
             // find the answer that needs to be updated
-            const answerToUpdate = db_question.answer_ids_list.find(answer => answer._id.equals(answer_data._id));
+            const answerToUpdate = db_question.answer_ids_list.find(answer => answer._id.equals(answer_update._id))._doc;
 
-            console.log(answerToUpdate);
-          })
+            // get the keys of the object
+            const answerFields = Object.keys(answerToUpdate);
+            // iterate through each field and determine if it can be updated
+            answerFields.forEach(key => {
+              if (systemFields.indexOf(key) == -1) {
+                answerToUpdate[key] = answer_update[key];
+              }
+            })
+
+            const t = new Answer(answerToUpdate);
+
+            t.save(err => {
+              if (err) {
+                console.log('saving the answer didnt work');
+                console.log(err);
+              }
+            })
+
+            /**
+             * TODO: Keep track of updatedAt values to see what needs to be pushed to the update_question_roster so its not necessary to push all questions and hence save an extra save operation or so
+             * 
+             * TODO: so updating the doc did not prove to be useful. Need to find a way to update and replace I guess
+             */
+
+            update_question_roster.push(answerToUpdate);
+
+          });
+
+          // console.log(update_question_roster);
+
+
           // update the question fields
 
           // save the question
