@@ -1,5 +1,6 @@
 import { Question, Answer } from '../../models/survey';
 import project from './question.controller.projection';
+import mongoose from 'mongoose';
 
 
 
@@ -98,55 +99,109 @@ export default {
   update_a_question: (req, res) => {
 
     // set up the query object
-    let query = null;
-    if (req.params.id) {
-      query = { _id: req.params.id + "" }
-    } else {
+    if (!req.params.id) {
       return res.status(400).send({
         code: 400,
         data: null,
         message: "Update request missing id."
       });
     }
-    console.log
+
     // set up the update
     let update = req.body.update;
     let systemFields = ["_id", "createdAt", "updatedAt", "authorId"];
 
     Question
-      .findById(query)
-      .then(db_question => {
-        const documentToUpdate = new Question(db_question);
+      .findById(req.params.id, project(req.user, "GET /questions/:id"))
+      .populate("answer_ids_list")
+      .exec((err, db_question) => {
+        if (err) {
+          return res.status(500).send({
+            code: 500,
+            data: null,
+            message: ""
+          })
+        } else if (db_question == null) {
+          return res.status(404).send({
+            code: 404,
+            data: null,
+            message: "Question not found"
+          })
+        } else {
+          // console.log(update.answers);
 
-        for (let key in update) {
-          documentToUpdate[key] = systemFields.indexOf(key) == -1 ? update[key] : documentToUpdate[key];
-        };
+          const update_question_roster = [];
+          // Update the answers and respective fields
+          update.answers.forEach(answer_data => {
 
-        documentToUpdate.save((err, db_update) => {
-          // if error occured, return error response
-          if (err) {
-            if (err.name != "ValidationError") {
-              return res.status(502).send({});
-            } else {
-              return res.status(400).send({});
-            }
-          }
+            // find the answer that needs to be updated
+            const answerToUpdate = db_question.answer_ids_list.find(answer => answer._id.equals(answer_data._id));
 
-          // return success response
+            console.log(answerToUpdate);
+          })
+          // update the question fields
+
+          // save the question
+
+          // save the answers
+
+          // for (let key in update) {
+          //   documentToUpdate
+          // }
+
           res.status(200).json({
             code: 200,
-            data: db_update,
-            message: "Resource has been updated"
+            data: db_question,
+            message: "Question found"
           });
-        })
-      })
-      .catch(err => {
-        res.status(500).send({
-          code: 500,
-          data: err,
-          message: "Something went wrong while searching for your question."
-        })
+        }
+
       });
+
+    // Question
+    //   .findById(req.params.id)
+    //   .then(db_question => {
+    //     if (db_questions === null) {
+    //       return res.status(404).send({
+    //         code: 400,
+    //         data: null,
+    //         message: `Question ${req.params.id} not found.`
+    //       });
+    //     }
+    //     console.log(db_question);
+    //     const documentToUpdate = new Question(db_question);
+
+    //     for (let key in update) {
+    //       documentToUpdate[key] = systemFields.indexOf(key) == -1 ? update[key] : documentToUpdate[key];
+    //     };
+
+    //     console.log(db_question);
+
+    //     documentToUpdate.save((err, db_update) => {
+    //       // if error occured, return error response
+    //       if (err) {
+    //         if (err.name != "ValidationError") {
+    //           return res.status(502).send({});
+    //         } else {
+    //           return res.status(400).send({});
+    //         }
+    //       }
+
+    //       // return success response
+    //       res.status(200).json({
+    //         code: 200,
+    //         data: db_update,
+    //         message: "Resource has been updated"
+    //       });
+    //     })
+    //   })
+    //   .catch(err => {
+    //     res.status(500).send({
+    //       code: 500,
+    //       data: err,
+    //       message: "Something went wrong while searching for your question."
+    //     })
+    //   });
 
 
   },
